@@ -49,6 +49,7 @@ MainActivity extends AppCompatActivity {
 
             //Set TextView with text
 
+
             tv.setText(getString(R.string.BatteryLevel) + level + "%");
             if (level > 90 && level <= 100) {
                 rl.setBackgroundResource(R.color.Green);

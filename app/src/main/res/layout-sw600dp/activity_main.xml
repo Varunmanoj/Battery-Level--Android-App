@@ -25,25 +25,22 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ProgressBar
-        android:id="@+id/progressBar"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="144dp"
-        android:visibility="visible"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
-
     <Button
         android:id="@+id/speak"
-        android:layout_width="419dp"
-        android:layout_height="95dp"
+        android:layout_width="971dp"
+        android:layout_height="94dp"
+        android:layout_marginBottom="102dp"
+        android:backgroundTint="@color/black"
+        android:hapticFeedbackEnabled="true"
         android:text="@string/Speak"
+        android:textColor="@color/ButtonTextColour"
         android:textSize="50sp"
         android:visibility="visible"
+        app:icon="@drawable/speaker"
+        app:iconGravity="textStart"
+        app:iconPadding="20dp"
+        app:iconSize="70sp"
+        app:iconTint="@color/ButtonTextColour"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.696"

@@ -12,4 +12,5 @@
     <color name="Yellow">#877417</color>
     <color name="purple_200">#FFBB86FC</color>
     <color name="textcolor">#FFFF</color>
+    <color name="ButtonTextColour">#FFFFFF</color>
 </resources>

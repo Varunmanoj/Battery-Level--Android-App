@@ -15,7 +15,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Button;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -30,7 +29,7 @@ import java.util.Locale;
 public class
 MainActivity extends AppCompatActivity {
     TextToSpeech mTTS = null;
-    //Create Broadcast Receiver Object along with class definition
+    String ReadText;    //Create Broadcast Receiver Object along with class definition
     private final BroadcastReceiver mBatInfoReceiver = new BroadcastReceiver() {
 
         @Override
@@ -40,10 +39,7 @@ MainActivity extends AppCompatActivity {
 
             //Get Battery %
             int level = i.getIntExtra("level", 0);
-            //Find the progressbar creating in main.xml
-            ProgressBar pb = findViewById(R.id.progressBar);
-            //Set progress level with battery % value
-            pb.setProgress(level);
+
             //Find textview control created in main.xml
             TextView tv = findViewById(R.id.textView);
 
@@ -87,12 +83,9 @@ MainActivity extends AppCompatActivity {
             }
         }
     };
-    String ReadText;
-
     Button speak;
     TextToSpeech AnnouncePhoneConnected;
     String PhoneConnected;
-
     TextView ChangeStatusText;
     FirebaseAnalytics mFirebaseAnalytics;
 
@@ -205,7 +198,6 @@ MainActivity extends AppCompatActivity {
         registerReceiver(mBatInfoReceiver, CheckChargeIntentFilter);
     }
 
-
     @Override
     protected void onStop() {
         super.onStop();
@@ -229,7 +221,6 @@ MainActivity extends AppCompatActivity {
         });
     }
 
-
     public void openTTSSettings() {
         //Open Android Text-To-Speech Settings
         Intent intent = new Intent();
@@ -238,14 +229,14 @@ MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    //    Menu File
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.mainmenu, menu);
         return super.onCreateOptionsMenu(menu);
     }
+
+    //    Menu File
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
@@ -290,5 +281,7 @@ MainActivity extends AppCompatActivity {
         super.onSaveInstanceState(OutState);
         OutState.putString("ChargeStatus", ChangeStatusText.getText().toString());
     }
+
+
 
 }

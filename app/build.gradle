@@ -13,8 +13,8 @@ android {
         applicationId "com.varunmanojkumar.batterylevel"
         minSdk 22
         targetSdk 33
-        versionCode 11
-        versionName "5"
+        versionCode 12
+        versionName "6"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

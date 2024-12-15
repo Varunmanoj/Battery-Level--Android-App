@@ -30,7 +30,7 @@ public class
 MainActivity extends AppCompatActivity {
     TextToSpeech mTTS = null;
     String ReadText;    //Create Broadcast Receiver Object along with class definition
-    private final BroadcastReceiver mBatInfoReceiver = new BroadcastReceiver() {
+    Button speak;        TextToSpeech AnnouncePhoneConnected;private final BroadcastReceiver mBatInfoReceiver = new BroadcastReceiver() {
 
         @Override
         //When Event is published, onReceive method is called
@@ -83,8 +83,6 @@ MainActivity extends AppCompatActivity {
             }
         }
     };
-    Button speak;
-    TextToSpeech AnnouncePhoneConnected;
     String PhoneConnected;
     TextView ChangeStatusText;
     FirebaseAnalytics mFirebaseAnalytics;
@@ -138,22 +136,6 @@ MainActivity extends AppCompatActivity {
 
     }
 
-    public  void CreateTTS(){
-        mTTS = new TextToSpeech(this, status -> {
-            if (status == TextToSpeech.SUCCESS) {
-                int result = mTTS.setLanguage(Locale.ENGLISH);
-                if (result == TextToSpeech.LANG_MISSING_DATA
-                        || result == TextToSpeech.LANG_NOT_SUPPORTED) {
-                    Log.e("TTS", "Language not supported");
-                } else {
-                    speak.setEnabled(true);
-                }
-            } else {
-                Log.e("TTS", "Initialization failed");
-            }
-        });
-    }
-
     public void ReleaseTTS() {
         try {
             if (mTTS != null) {
@@ -204,6 +186,22 @@ MainActivity extends AppCompatActivity {
         ReleaseTTS();
     }
 
+    public  void CreateTTS(){
+        mTTS = new TextToSpeech(this, status -> {
+            if (status == TextToSpeech.SUCCESS) {
+                int result = mTTS.setLanguage(Locale.ENGLISH);
+                if (result == TextToSpeech.LANG_MISSING_DATA
+                        || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                    Log.e("TTS", "Language not supported");
+                } else {
+                    speak.setEnabled(true);
+                }
+            } else {
+                Log.e("TTS", "Initialization failed");
+            }
+        });
+    }
+
     public void AnnouncePhoneConnected() {
         BatteryManager ba = (BatteryManager) getSystemService(BATTERY_SERVICE);
         int batLevel = ba.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
@@ -235,8 +233,6 @@ MainActivity extends AppCompatActivity {
         inflater.inflate(R.menu.mainmenu, menu);
         return super.onCreateOptionsMenu(menu);
     }
-
-    //    Menu File
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
@@ -276,11 +272,17 @@ MainActivity extends AppCompatActivity {
         ReleaseTTS();
     }
 
+    //    Menu File
+
     //    Save the value of charging and not charging in bundle
     protected void onSaveInstanceState(@NonNull Bundle OutState) {
         super.onSaveInstanceState(OutState);
         OutState.putString("ChargeStatus", ChangeStatusText.getText().toString());
     }
+
+
+
+
 
 
 

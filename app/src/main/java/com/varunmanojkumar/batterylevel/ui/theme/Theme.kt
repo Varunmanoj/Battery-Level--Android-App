@@ -44,13 +44,13 @@ private val DarkColorScheme = darkColorScheme(
 private val AppTypography = Typography(
     displayLarge = TextStyle(
         fontWeight = FontWeight.Bold,
-        fontSize = 72.sp,
-        lineHeight = 80.sp,
+        fontSize = 84.sp,
+        lineHeight = 92.sp,
     ),
     headlineLarge = TextStyle(
         fontWeight = FontWeight.Bold,
-        fontSize = 32.sp,
-        lineHeight = 40.sp,
+        fontSize = 40.sp,
+        lineHeight = 48.sp,
     ),
     labelLarge = TextStyle(
         fontWeight = FontWeight.Bold,
@@ -64,7 +64,7 @@ object BatteryDimensions {
     val SectionSpacing = 24.dp
     val CompactSpacing = 12.dp
     val ContentMaxWidth = 960.dp
-    val ButtonMinHeight = 64.dp
+    val ButtonMinHeight = 96.dp
     val TabletBreakpoint = 600.dp
 }
 

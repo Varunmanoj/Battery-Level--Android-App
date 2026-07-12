@@ -15,21 +15,23 @@ import android.speech.tts.TextToSpeech
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
@@ -43,14 +45,15 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
@@ -62,7 +65,6 @@ import androidx.core.content.edit
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.varunmanojkumar.batterylevel.ui.theme.BatteryDimensions
 import com.varunmanojkumar.batterylevel.ui.theme.BatteryLevelTheme
-import com.varunmanojkumar.batterylevel.ui.theme.LocalBatteryLevelColors
 import java.util.Locale
 
 enum class ThemeMode { SYSTEM, LIGHT, DARK }
@@ -74,6 +76,13 @@ data class BatteryUiState(
 
 internal fun normalizedBatteryLevel(level: Int, scale: Int): Int =
     if (scale <= 0) 0 else ((level * 100f) / scale).toInt().coerceIn(0, 100)
+
+internal fun batteryUiState(level: Int, scale: Int, status: Int): BatteryUiState =
+    BatteryUiState(
+        level = normalizedBatteryLevel(level, scale),
+        isCharging = status == BatteryManager.BATTERY_STATUS_CHARGING ||
+            status == BatteryManager.BATTERY_STATUS_FULL,
+    )
 
 class MainActivity : ComponentActivity() {
     private var batteryState by mutableStateOf(BatteryUiState())
@@ -130,14 +139,22 @@ class MainActivity : ComponentActivity() {
                 addAction(Intent.ACTION_POWER_CONNECTED)
                 addAction(Intent.ACTION_POWER_DISCONNECTED)
             }
-            ContextCompat.registerReceiver(
+            val currentBatteryIntent = ContextCompat.registerReceiver(
                 this,
                 batteryReceiver,
                 filter,
                 ContextCompat.RECEIVER_NOT_EXPORTED,
             )
             receiverRegistered = true
+            if (currentBatteryIntent?.action == Intent.ACTION_BATTERY_CHANGED) {
+                batteryState = batteryStateFromIntent(currentBatteryIntent)
+            }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        batteryState = readCurrentBatteryState()
     }
 
     override fun onStop() {
@@ -210,11 +227,7 @@ class MainActivity : ComponentActivity() {
         val level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0)
         val scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, 100)
         val status = intent.getIntExtra(BatteryManager.EXTRA_STATUS, BatteryManager.BATTERY_STATUS_UNKNOWN)
-        return BatteryUiState(
-            level = normalizedBatteryLevel(level, scale),
-            isCharging = status == BatteryManager.BATTERY_STATUS_CHARGING ||
-                status == BatteryManager.BATTERY_STATUS_FULL,
-        )
+        return batteryUiState(level = level, scale = scale, status = status)
     }
 
     @Suppress("DEPRECATION")
@@ -249,17 +262,12 @@ fun BatteryLevelApp(
     onThemeSelected: (ThemeMode) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val batteryStyle = LocalBatteryLevelColors.current.forLevel(uiState.level)
-    val backgroundColor by animateColorAsState(
-        targetValue = batteryStyle.container,
-        label = "battery background",
-    )
     var themeMenuExpanded by remember { mutableStateOf(false) }
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
-        containerColor = backgroundColor,
-        contentColor = batteryStyle.content,
+        containerColor = MaterialTheme.colorScheme.background,
+        contentColor = MaterialTheme.colorScheme.onBackground,
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.app_name), fontWeight = FontWeight.Bold) },
@@ -339,13 +347,13 @@ private fun CompactBatteryContent(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier,
+        modifier = modifier.verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceEvenly,
+        verticalArrangement = Arrangement.spacedBy(BatteryDimensions.SectionSpacing),
     ) {
         BatteryReading(uiState)
-        SpeakButton(canSpeak, onSpeak)
         ChargingStatus(uiState.isCharging)
+        SpeakButton(canSpeak, onSpeak)
     }
 }
 
@@ -357,7 +365,7 @@ private fun WideBatteryContent(
     modifier: Modifier = Modifier,
 ) {
     Row(
-        modifier = modifier,
+        modifier = modifier.verticalScroll(rememberScrollState()),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(BatteryDimensions.SectionSpacing),
     ) {
@@ -365,12 +373,12 @@ private fun WideBatteryContent(
             BatteryReading(uiState)
         }
         Column(
-            modifier = Modifier.weight(1f).fillMaxHeight(),
+            modifier = Modifier.weight(1f),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceEvenly,
+            verticalArrangement = Arrangement.spacedBy(BatteryDimensions.SectionSpacing),
         ) {
-            SpeakButton(canSpeak, onSpeak)
             ChargingStatus(uiState.isCharging)
+            SpeakButton(canSpeak, onSpeak)
         }
     }
 }
@@ -398,35 +406,54 @@ private fun BatteryReading(uiState: BatteryUiState) {
 
 @Composable
 private fun SpeakButton(canSpeak: Boolean, onSpeak: () -> Unit) {
+    val speakDescription = stringResource(R.string.speak_battery_description)
     Button(
         onClick = onSpeak,
         enabled = canSpeak,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Color.Black,
+            contentColor = Color.White,
+            disabledContainerColor = Color.Black,
+            disabledContentColor = Color.White.copy(alpha = 0.72f),
+        ),
+        shape = MaterialTheme.shapes.large,
+        contentPadding = PaddingValues(horizontal = 32.dp, vertical = 24.dp),
         modifier = Modifier
             .fillMaxWidth()
-            .heightIn(min = BatteryDimensions.ButtonMinHeight),
+            .heightIn(min = BatteryDimensions.ButtonMinHeight)
+            .semantics { contentDescription = speakDescription },
     ) {
         Icon(
             painter = painterResource(R.drawable.symbol_volume_up),
             contentDescription = null,
-            modifier = Modifier.size(28.dp),
+            modifier = Modifier.size(40.dp),
         )
         Spacer(Modifier.size(BatteryDimensions.CompactSpacing))
-        Text(stringResource(R.string.speak_battery))
+        Text(
+            text = stringResource(R.string.speak_battery),
+            style = MaterialTheme.typography.headlineMedium,
+            fontWeight = FontWeight.Black,
+        )
     }
 }
 
 @Composable
 private fun ChargingStatus(isCharging: Boolean) {
+    if (!isCharging) return
+
     Card(
+        modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
-            contentColor = MaterialTheme.colorScheme.onSurface,
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
+            contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
         ),
     ) {
         Text(
             text = stringResource(if (isCharging) R.string.charging else R.string.not_charging),
             style = MaterialTheme.typography.headlineLarge,
-            modifier = Modifier.padding(BatteryDimensions.SectionSpacing),
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(BatteryDimensions.SectionSpacing),
         )
     }
 }
@@ -468,6 +495,7 @@ private fun ThemeMenuItem(
 }
 
 @Preview(name = "Phone", device = Devices.PHONE, showSystemUi = true)
+@Preview(name = "Phone - 200% font", device = Devices.PHONE, fontScale = 2f, showSystemUi = true)
 @Preview(name = "Tablet", device = Devices.TABLET, showSystemUi = true)
 @Composable
 private fun BatteryLevelPreview() {

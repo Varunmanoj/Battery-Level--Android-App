@@ -6,7 +6,8 @@
     <string name="battery_level_description" tools:ignore="PluralsCandidate">Battery level %1$d percent</string>
     <string name="charging">Charging</string>
     <string name="not_charging">Not charging</string>
-    <string name="speak_battery">Read battery level</string>
+    <string name="speak_battery">Speak it</string>
+    <string name="speak_battery_description">Read battery level aloud</string>
     <string name="refresh">Refresh battery status</string>
     <string name="tts_settings">Text-to-speech settings</string>
     <string name="theme">Theme</string>

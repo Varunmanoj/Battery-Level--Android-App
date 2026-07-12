@@ -1,6 +1,15 @@
-Z# Battery-Level--Android-App
+# Battery-Level--Android-App
 ## Short Description
 An Android App to View Battery Level of Phone for people with visual impairment and senior citizens.
+
+## Technical stack
+
+- Kotlin with Jetpack Compose and Material 3
+- Material Symbols vector icons and Material You dynamic color
+- Edge-to-edge, adaptive phone/tablet layouts
+- Compiles and targets Android API 37 for Android 16 and Android 17 compatibility
+- Supports Android 6.0 (API 23) and newer
+
 This app aims to make it easier to view the phone/tablet’s battery %  and charging status in Large Font, Bold Text and Speech.
 This is an Open Source Project developed specially for users with visual Impairments in mind. 
 ## Long Description

@@ -2,4 +2,5 @@
 <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
     <background android:drawable="@color/batteryfull_background"/>
     <foreground android:drawable="@drawable/batteryfull_foreground"/>
+    <monochrome android:drawable="@drawable/batteryfull_foreground"/>
 </adaptive-icon>

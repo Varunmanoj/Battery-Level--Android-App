@@ -1,24 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Battery %</string>
-    <string name="Speak">यह कहना!</string>
-
-    <string name="NotCharging">चार्ज नहीं हो रहा</string>
-    <string name="Charging">चार्ज</string>
-    <string name="BatteryLevel">\बैटरी का स्तर  \n \</string>
-    <string name="FullyCharged">पूर्णतःउर्जित</string>
-
-
-    <!--    menu File-->
-    <string name="AppTheme">ऐप थीम</string>
-    <string name="Light">रोशनी</string>
-    <string name="Dark">अंधेरा</string>
-    <string name="System">प्रणालीगत चूक</string>
-    <string name="TTS">टेक्स्ट टू स्पीच सेटिंग्स</string>
-    <string name="TTSExpanded">टेक्स्ट टू स्पीच सेटिंग खोलें</string>
-
-    <!--    Power Connected Announcement-->
-    <string name="PowerConnected">Power Connected</string>
-    <string name="PowerDisconnected">Power Disconnected</string>
-    <string name="Refresh">Refresh</string>
+    <string name="battery_level">बैटरी स्तर</string>
+    <string name="battery_percentage">%1$d%%</string>
+    <string name="battery_level_description">बैटरी स्तर %1$d प्रतिशत</string>
+    <string name="charging">चार्ज हो रहा है</string>
+    <string name="not_charging">चार्ज नहीं हो रहा है</string>
+    <string name="speak_battery">बैटरी स्तर सुनें</string>
+    <string name="refresh">बैटरी की स्थिति रीफ़्रेश करें</string>
+    <string name="tts_settings">टेक्स्ट-टू-स्पीच सेटिंग</string>
+    <string name="theme">थीम</string>
+    <string name="theme_light">लाइट</string>
+    <string name="theme_dark">डार्क</string>
+    <string name="theme_system">सिस्टम डिफ़ॉल्ट</string>
+    <string name="device_status_announcement">बैटरी स्तर %1$d प्रतिशत। %2$s।</string>
 </resources>

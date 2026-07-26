@@ -4,13 +4,19 @@
     <string name="battery_percentage">%1$d%%</string>
     <string name="battery_level_description">बैटरी स्तर %1$d प्रतिशत</string>
     <string name="charging">चार्ज हो रहा है</string>
+    <string name="fully_charged">पूरी तरह चार्ज</string>
     <string name="not_charging">चार्ज नहीं हो रहा है</string>
     <string name="speak_battery">बैटरी स्तर सुनें</string>
+    <string name="speak_battery_description">बैटरी स्तर ज़ोर से पढ़ें</string>
     <string name="refresh">बैटरी की स्थिति रीफ़्रेश करें</string>
     <string name="tts_settings">टेक्स्ट-टू-स्पीच सेटिंग</string>
+    <string name="tts_settings_short">TTS सेटिंग</string>
     <string name="theme">थीम</string>
     <string name="theme_light">लाइट</string>
     <string name="theme_dark">डार्क</string>
     <string name="theme_system">सिस्टम डिफ़ॉल्ट</string>
+    <string name="theme_system_short">सिस्टम</string>
+    <string name="back">वापस</string>
+    <string name="settings">सेटिंग</string>
     <string name="device_status_announcement">बैटरी स्तर %1$d प्रतिशत। %2$s।</string>
 </resources>

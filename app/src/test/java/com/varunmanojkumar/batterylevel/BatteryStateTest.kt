@@ -31,4 +31,20 @@ class BatteryStateTest {
             batteryUiState(72, 100, BatteryManager.BATTERY_STATUS_DISCHARGING).isCharging,
         )
     }
+
+    @Test
+    fun reportsFullyChargedAtOneHundredPercentWhileOsReportsChargingOrFull() {
+        assertTrue(
+            batteryUiState(100, 100, BatteryManager.BATTERY_STATUS_CHARGING).isFullyCharged,
+        )
+        assertTrue(
+            batteryUiState(100, 100, BatteryManager.BATTERY_STATUS_FULL).isFullyCharged,
+        )
+        assertFalse(
+            batteryUiState(99, 100, BatteryManager.BATTERY_STATUS_CHARGING).isFullyCharged,
+        )
+        assertFalse(
+            batteryUiState(100, 100, BatteryManager.BATTERY_STATUS_DISCHARGING).isFullyCharged,
+        )
+    }
 }

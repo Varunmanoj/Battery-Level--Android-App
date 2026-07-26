@@ -65,6 +65,10 @@ object BatteryDimensions {
     val CompactSpacing = 12.dp
     val ContentMaxWidth = 960.dp
     val ButtonMinHeight = 96.dp
+    val WearButtonMinHeight = 64.dp
+    val WearBreakpoint = 300.dp
+    val WearHeaderTopInset = 16.dp
+    val WearStatusPadding = 8.dp
     val TabletBreakpoint = 600.dp
 }
 

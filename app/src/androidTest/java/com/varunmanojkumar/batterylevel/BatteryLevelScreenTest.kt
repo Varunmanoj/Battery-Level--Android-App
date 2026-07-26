@@ -5,8 +5,10 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.performClick
 import com.varunmanojkumar.batterylevel.ui.theme.BatteryLevelTheme
 import org.junit.Rule
 import org.junit.Test
@@ -35,7 +37,17 @@ class BatteryLevelScreenTest {
         composeRule.onNodeWithText("37%").assertIsDisplayed()
         composeRule.onAllNodesWithText("Not charging").assertCountEquals(0)
         composeRule.onNodeWithText("Speak it").assertHasClickAction()
-        composeRule.onNodeWithContentDescription("Refresh battery status").assertHasClickAction()
-        composeRule.onNodeWithContentDescription("Text-to-speech settings").assertHasClickAction()
+        val wearSettings = composeRule.onAllNodesWithContentDescription("Settings")
+            .fetchSemanticsNodes()
+        if (wearSettings.isNotEmpty()) {
+            composeRule.onNodeWithContentDescription("Settings").performClick()
+            composeRule.onNodeWithText("Refresh battery status").assertHasClickAction()
+            composeRule.onNodeWithText("TTS settings").assertHasClickAction()
+        } else {
+            composeRule.onNodeWithContentDescription("Refresh battery status")
+                .assertHasClickAction()
+            composeRule.onNodeWithContentDescription("Text-to-speech settings")
+                .assertHasClickAction()
+        }
     }
 }

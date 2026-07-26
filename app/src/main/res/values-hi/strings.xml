@@ -18,5 +18,8 @@
     <string name="theme_system_short">सिस्टम</string>
     <string name="back">वापस</string>
     <string name="settings">सेटिंग</string>
+    <string name="app_info">ऐप की जानकारी</string>
+    <string name="version_name">संस्करण नाम</string>
+    <string name="version_name_description">संस्करण नाम %1$s</string>
     <string name="device_status_announcement">बैटरी स्तर %1$d प्रतिशत। %2$s।</string>
 </resources>

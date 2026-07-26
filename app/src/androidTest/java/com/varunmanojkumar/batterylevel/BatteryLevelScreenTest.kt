@@ -37,17 +37,20 @@ class BatteryLevelScreenTest {
         composeRule.onNodeWithText("37%").assertIsDisplayed()
         composeRule.onAllNodesWithText("Not charging").assertCountEquals(0)
         composeRule.onNodeWithText("Speak it").assertHasClickAction()
-        val wearSettings = composeRule.onAllNodesWithContentDescription("Settings")
-            .fetchSemanticsNodes()
-        if (wearSettings.isNotEmpty()) {
-            composeRule.onNodeWithContentDescription("Settings").performClick()
-            composeRule.onNodeWithText("Refresh battery status").assertHasClickAction()
-            composeRule.onNodeWithText("TTS settings").assertHasClickAction()
-        } else {
-            composeRule.onNodeWithContentDescription("Refresh battery status")
-                .assertHasClickAction()
-            composeRule.onNodeWithContentDescription("Text-to-speech settings")
-                .assertHasClickAction()
-        }
+        composeRule.onAllNodesWithContentDescription("Settings").assertCountEquals(1)
+        composeRule.onAllNodesWithContentDescription("Refresh battery status").assertCountEquals(0)
+        composeRule.onAllNodesWithContentDescription("Text-to-speech settings").assertCountEquals(0)
+
+        composeRule.onNodeWithContentDescription("Settings").performClick()
+        composeRule.onNodeWithText("Settings").assertIsDisplayed()
+        composeRule.onNodeWithText("Refresh battery status").assertHasClickAction()
+        composeRule.onNodeWithText("TTS settings").assertHasClickAction()
+        composeRule.onNodeWithText("System").assertHasClickAction()
+        composeRule.onNodeWithText("Light").assertHasClickAction()
+        composeRule.onNodeWithText("Dark").assertHasClickAction()
+        composeRule.onNodeWithText("App info").fetchSemanticsNode()
+        composeRule.onNodeWithContentDescription("Version name ${BuildConfig.VERSION_NAME}").fetchSemanticsNode()
+        composeRule.onNodeWithText("Back").performClick()
+        composeRule.onNodeWithContentDescription("Battery level 37 percent").assertIsDisplayed()
     }
 }

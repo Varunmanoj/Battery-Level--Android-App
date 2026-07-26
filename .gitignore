@@ -24,6 +24,9 @@ output-metadata.json
 # Signing credentials and local release configuration
 *.jks
 *.keystore
+*.pepk
+*.p12
+*.pfx
 key.properties
 
 # Logs, heap dumps, and operating-system metadata
@@ -31,4 +34,3 @@ key.properties
 *.hprof
 .DS_Store
 Thumbs.db
-private_key.pepk

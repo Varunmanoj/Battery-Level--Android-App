@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -32,13 +33,13 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -280,13 +281,14 @@ fun BatteryLevelApp(
     onThemeSelected: (ThemeMode) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var themeMenuExpanded by rememberSaveable { mutableStateOf(false) }
+    var settingsVisible by rememberSaveable { mutableStateOf(false) }
     val isWearSized = LocalConfiguration.current.screenWidthDp < 300
 
-    if (isWearSized && themeMenuExpanded) {
-        WearSettingsPage(
+    if (settingsVisible) {
+        SettingsPage(
             selectedMode = themeMode,
-            onBack = { themeMenuExpanded = false },
+            isWearSized = isWearSized,
+            onBack = { settingsVisible = false },
             onSelected = onThemeSelected,
             onRefresh = onRefresh,
             onOpenTtsSettings = onOpenTtsSettings,
@@ -312,7 +314,7 @@ fun BatteryLevelApp(
                         color = MaterialTheme.colorScheme.primaryContainer,
                         contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                     ) {
-                        IconButton(onClick = { themeMenuExpanded = true }) {
+                        IconButton(onClick = { settingsVisible = true }) {
                             Icon(
                                 painter = painterResource(R.drawable.symbol_settings),
                                 contentDescription = stringResource(R.string.settings),
@@ -329,14 +331,12 @@ fun BatteryLevelApp(
                         actionIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                     ),
                     actions = {
-                        BatteryActions(
-                            themeMode = themeMode,
-                            themeMenuExpanded = themeMenuExpanded,
-                            onThemeMenuExpandedChange = { themeMenuExpanded = it },
-                            onRefresh = onRefresh,
-                            onOpenTtsSettings = onOpenTtsSettings,
-                            onThemeSelected = onThemeSelected,
-                        )
+                        IconButton(onClick = { settingsVisible = true }) {
+                            Icon(
+                                painter = painterResource(R.drawable.symbol_settings),
+                                contentDescription = stringResource(R.string.settings),
+                            )
+                        }
                     },
                 )
             }
@@ -379,48 +379,9 @@ fun BatteryLevelApp(
 }
 
 @Composable
-private fun BatteryActions(
-    themeMode: ThemeMode,
-    themeMenuExpanded: Boolean,
-    onThemeMenuExpandedChange: (Boolean) -> Unit,
-    onRefresh: () -> Unit,
-    onOpenTtsSettings: () -> Unit,
-    onThemeSelected: (ThemeMode) -> Unit,
-) {
-    IconButton(onClick = onRefresh) {
-        Icon(
-            painterResource(R.drawable.symbol_refresh),
-            contentDescription = stringResource(R.string.refresh),
-        )
-    }
-    IconButton(onClick = onOpenTtsSettings) {
-        Icon(
-            painterResource(R.drawable.symbol_settings_voice),
-            contentDescription = stringResource(R.string.tts_settings),
-        )
-    }
-    Box {
-        IconButton(onClick = { onThemeMenuExpandedChange(true) }) {
-            Icon(
-                painterResource(R.drawable.symbol_brightness_auto),
-                contentDescription = stringResource(R.string.theme),
-            )
-        }
-        ThemeMenu(
-            expanded = themeMenuExpanded,
-            selectedMode = themeMode,
-            onDismiss = { onThemeMenuExpandedChange(false) },
-            onSelected = {
-                onThemeMenuExpandedChange(false)
-                onThemeSelected(it)
-            },
-        )
-    }
-}
-
-@Composable
-private fun WearSettingsPage(
+private fun SettingsPage(
     selectedMode: ThemeMode,
+    isWearSized: Boolean,
     onBack: () -> Unit,
     onSelected: (ThemeMode) -> Unit,
     onRefresh: () -> Unit,
@@ -434,65 +395,113 @@ private fun WearSettingsPage(
         color = MaterialTheme.colorScheme.background,
         contentColor = MaterialTheme.colorScheme.onBackground,
     ) {
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 32.dp, vertical = 24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(BatteryDimensions.CompactSpacing),
+                .windowInsetsPadding(WindowInsets.safeDrawing),
+            contentAlignment = Alignment.TopCenter,
         ) {
-            TextButton(
-                onClick = onBack,
-                modifier = Modifier.align(Alignment.Start),
+            Column(
+                modifier = Modifier
+                    .widthIn(max = 560.dp)
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState())
+                    .padding(
+                        horizontal = if (isWearSized) 32.dp else 24.dp,
+                        vertical = 24.dp,
+                    ),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(BatteryDimensions.CompactSpacing),
             ) {
-                Text(stringResource(R.string.back))
+                TextButton(
+                    onClick = onBack,
+                    modifier = Modifier.align(Alignment.Start),
+                ) {
+                    Text(stringResource(R.string.back))
+                }
+                Text(
+                    text = stringResource(R.string.settings),
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.Bold,
+                )
+                SettingsAction(
+                    label = R.string.refresh,
+                    icon = R.drawable.symbol_refresh,
+                    onClick = onRefresh,
+                )
+                SettingsAction(
+                    label = R.string.tts_settings_short,
+                    icon = R.drawable.symbol_settings_voice,
+                    onClick = onOpenTtsSettings,
+                )
+                Text(
+                    text = stringResource(R.string.theme),
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(top = 4.dp),
+                )
+                ThemeOption(
+                    mode = ThemeMode.SYSTEM,
+                    selectedMode = selectedMode,
+                    label = R.string.theme_system_short,
+                    onSelected = onSelected,
+                )
+                ThemeOption(
+                    mode = ThemeMode.LIGHT,
+                    selectedMode = selectedMode,
+                    label = R.string.theme_light,
+                    onSelected = onSelected,
+                )
+                ThemeOption(
+                    mode = ThemeMode.DARK,
+                    selectedMode = selectedMode,
+                    label = R.string.theme_dark,
+                    onSelected = onSelected,
+                )
+                Text(
+                    text = stringResource(R.string.app_info),
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(top = 4.dp),
+                )
+                AppInfo(versionName = BuildConfig.VERSION_NAME)
             }
+        }
+    }
+}
+
+@Composable
+private fun AppInfo(versionName: String) {
+    val versionDescription = stringResource(R.string.version_name_description, versionName)
+    Surface(
+        shape = MaterialTheme.shapes.large,
+        color = MaterialTheme.colorScheme.surfaceVariant,
+        contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .semantics(mergeDescendants = true) {
+                    contentDescription = versionDescription
+                }
+                .padding(horizontal = 20.dp, vertical = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
             Text(
-                text = stringResource(R.string.settings),
-                style = MaterialTheme.typography.headlineMedium,
+                text = stringResource(R.string.version_name),
+                style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
             )
-            WearSettingsAction(
-                label = R.string.refresh,
-                icon = R.drawable.symbol_refresh,
-                onClick = onRefresh,
-            )
-            WearSettingsAction(
-                label = R.string.tts_settings_short,
-                icon = R.drawable.symbol_settings_voice,
-                onClick = onOpenTtsSettings,
-            )
             Text(
-                text = stringResource(R.string.theme),
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(top = 4.dp),
-            )
-            WearThemeOption(
-                mode = ThemeMode.SYSTEM,
-                selectedMode = selectedMode,
-                label = R.string.theme_system_short,
-                onSelected = onSelected,
-            )
-            WearThemeOption(
-                mode = ThemeMode.LIGHT,
-                selectedMode = selectedMode,
-                label = R.string.theme_light,
-                onSelected = onSelected,
-            )
-            WearThemeOption(
-                mode = ThemeMode.DARK,
-                selectedMode = selectedMode,
-                label = R.string.theme_dark,
-                onSelected = onSelected,
+                text = versionName,
+                style = MaterialTheme.typography.bodyLarge,
             )
         }
     }
 }
 
 @Composable
-private fun WearSettingsAction(
+private fun SettingsAction(
     label: Int,
     icon: Int,
     onClick: () -> Unit,
@@ -526,7 +535,7 @@ private fun WearSettingsAction(
 }
 
 @Composable
-private fun WearThemeOption(
+private fun ThemeOption(
     mode: ThemeMode,
     selectedMode: ThemeMode,
     label: Int,
@@ -552,6 +561,7 @@ private fun WearThemeOption(
                 .heightIn(min = 56.dp)
                 .clickable { onSelected(mode) }
                 .padding(horizontal = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             RadioButton(selected = selected, onClick = null)
@@ -778,51 +788,6 @@ private fun ChargingStatus(
                 ),
         )
     }
-}
-
-@Composable
-private fun ThemeMenu(
-    expanded: Boolean,
-    selectedMode: ThemeMode,
-    onDismiss: () -> Unit,
-    onSelected: (ThemeMode) -> Unit,
-) {
-    DropdownMenu(
-        expanded = expanded,
-        onDismissRequest = onDismiss,
-    ) {
-        ThemeMenuItem(
-            ThemeMode.SYSTEM,
-            selectedMode,
-            R.string.theme_system,
-            R.drawable.symbol_brightness_auto,
-            onSelected,
-        )
-        ThemeMenuItem(ThemeMode.LIGHT, selectedMode, R.string.theme_light, R.drawable.symbol_light_mode, onSelected)
-        ThemeMenuItem(ThemeMode.DARK, selectedMode, R.string.theme_dark, R.drawable.symbol_dark_mode, onSelected)
-    }
-}
-
-@Composable
-private fun ThemeMenuItem(
-    mode: ThemeMode,
-    selectedMode: ThemeMode,
-    label: Int,
-    icon: Int,
-    onSelected: (ThemeMode) -> Unit,
-) {
-    DropdownMenuItem(
-        text = {
-            Text(
-                text = stringResource(label),
-                fontWeight = if (mode == selectedMode) FontWeight.Bold else FontWeight.Normal,
-            )
-        },
-        onClick = { onSelected(mode) },
-        leadingIcon = {
-            Icon(painterResource(icon), contentDescription = null)
-        },
-    )
 }
 
 @Preview(name = "Phone", device = Devices.PHONE, showSystemUi = true)

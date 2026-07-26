@@ -7,6 +7,20 @@ plugins {
     id 'com.google.firebase.appdistribution'
 }
 
+def releaseSigningProperties = new Properties()
+def releaseSigningPropertiesFile = rootProject.file('key.properties')
+if (releaseSigningPropertiesFile.exists()) {
+    releaseSigningPropertiesFile.withInputStream { input ->
+        releaseSigningProperties.load(input)
+    }
+}
+def releaseSigningConfigured = [
+    'storeFile',
+    'storePassword',
+    'keyAlias',
+    'keyPassword',
+].every { propertyName -> releaseSigningProperties.getProperty(propertyName) }
+
 android {
     namespace 'com.varunmanojkumar.batterylevel'
     compileSdk 37
@@ -15,10 +29,33 @@ android {
         applicationId "com.varunmanojkumar.batterylevel"
         minSdk 23
         targetSdk 37
-        versionCode 14
-        versionName "8"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    flavorDimensions += "device"
+    productFlavors {
+        mobile {
+            dimension "device"
+            versionCode 140
+            versionName "8"
+        }
+        wear {
+            dimension "device"
+            versionCode 141
+            versionName "8"
+        }
+    }
+
+    signingConfigs {
+        release {
+            if (releaseSigningConfigured) {
+                storeFile rootProject.file(releaseSigningProperties.getProperty('storeFile'))
+                storePassword releaseSigningProperties.getProperty('storePassword')
+                keyAlias releaseSigningProperties.getProperty('keyAlias')
+                keyPassword releaseSigningProperties.getProperty('keyPassword')
+            }
+        }
     }
 
     buildTypes {
@@ -26,6 +63,9 @@ android {
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            if (releaseSigningConfigured) {
+                signingConfig signingConfigs.release
+            }
         }
     }
     compileOptions {
@@ -33,6 +73,7 @@ android {
         targetCompatibility JavaVersion.VERSION_17
     }
     buildFeatures {
+        buildConfig true
         compose true
     }
 }
@@ -60,4 +101,34 @@ dependencies {
     androidTestImplementation 'androidx.compose.ui:ui-test-junit4'
     debugImplementation 'androidx.compose.ui:ui-tooling'
     debugImplementation 'androidx.compose.ui:ui-test-manifest'
+}
+
+def requireReleaseSigning = tasks.register('requireReleaseSigning') {
+    doLast {
+        if (!releaseSigningConfigured) {
+            throw new GradleException(
+                'Release signing is not configured. Fill in the ignored key.properties file ' +
+                    'before building Play Store bundles.',
+            )
+        }
+    }
+}
+
+tasks.configureEach { task ->
+    if (task.name == 'bundleMobileRelease' || task.name == 'bundleWearRelease') {
+        task.dependsOn(requireReleaseSigning)
+    }
+}
+
+tasks.register('bundlePlayRelease') {
+    group = 'build'
+    description = 'Builds the signed mobile and Wear OS bundles for Google Play.'
+    dependsOn('bundleMobileRelease', 'bundleWearRelease')
+    doLast {
+        logger.lifecycle(
+            'Google Play bundles: app/build/outputs/bundle/mobileRelease/' +
+                'app-mobile-release.aab and app/build/outputs/bundle/wearRelease/' +
+                'app-wear-release.aab',
+        )
+    }
 }

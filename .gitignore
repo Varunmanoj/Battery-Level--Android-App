@@ -31,3 +31,4 @@ key.properties
 *.hprof
 .DS_Store
 Thumbs.db
+private_key.pepk

@@ -21,6 +21,7 @@
     <string name="settings">Settings</string>
     <string name="app_info">App info</string>
     <string name="version_name">Version name</string>
+    <string name="version_footer">Version %1$s</string>
     <string name="version_name_description">Version name %1$s</string>
     <string name="device_status_announcement" tools:ignore="PluralsCandidate">Battery level %1$d percent. %2$s.</string>
 </resources>

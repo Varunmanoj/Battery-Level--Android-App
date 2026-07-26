@@ -41,6 +41,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -48,7 +49,6 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -413,11 +413,14 @@ private fun SettingsPage(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(BatteryDimensions.CompactSpacing),
             ) {
-                TextButton(
+                IconButton(
                     onClick = onBack,
                     modifier = Modifier.align(Alignment.Start),
                 ) {
-                    Text(stringResource(R.string.back))
+                    Icon(
+                        painter = painterResource(R.drawable.symbol_arrow_back),
+                        contentDescription = stringResource(R.string.back),
+                    )
                 }
                 Text(
                     text = stringResource(R.string.settings),
@@ -458,12 +461,6 @@ private fun SettingsPage(
                     label = R.string.theme_dark,
                     onSelected = onSelected,
                 )
-                Text(
-                    text = stringResource(R.string.app_info),
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(top = 4.dp),
-                )
                 AppInfo(versionName = BuildConfig.VERSION_NAME)
             }
         }
@@ -473,30 +470,31 @@ private fun SettingsPage(
 @Composable
 private fun AppInfo(versionName: String) {
     val versionDescription = stringResource(R.string.version_name_description, versionName)
-    Surface(
-        shape = MaterialTheme.shapes.large,
-        color = MaterialTheme.colorScheme.surfaceVariant,
-        contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+    val footerColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .semantics(mergeDescendants = true) {
+                contentDescription = versionDescription
+            }
+            .padding(top = 16.dp, bottom = 8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .semantics(mergeDescendants = true) {
-                    contentDescription = versionDescription
-                }
-                .padding(horizontal = 20.dp, vertical = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp),
-        ) {
-            Text(
-                text = stringResource(R.string.version_name),
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-            )
-            Text(
-                text = versionName,
-                style = MaterialTheme.typography.bodyLarge,
-            )
-        }
+        HorizontalDivider(
+            modifier = Modifier.padding(bottom = 8.dp),
+            color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f),
+        )
+        Text(
+            text = stringResource(R.string.app_info),
+            style = MaterialTheme.typography.labelMedium,
+            color = footerColor,
+        )
+        Text(
+            text = stringResource(R.string.version_footer, versionName),
+            style = MaterialTheme.typography.bodySmall,
+            color = footerColor,
+        )
     }
 }
 

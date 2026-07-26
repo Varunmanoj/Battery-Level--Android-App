@@ -50,7 +50,8 @@ class BatteryLevelScreenTest {
         composeRule.onNodeWithText("Dark").assertHasClickAction()
         composeRule.onNodeWithText("App info").fetchSemanticsNode()
         composeRule.onNodeWithContentDescription("Version name ${BuildConfig.VERSION_NAME}").fetchSemanticsNode()
-        composeRule.onNodeWithText("Back").performClick()
+        composeRule.onAllNodesWithText("Back").assertCountEquals(0)
+        composeRule.onNodeWithContentDescription("Back").performClick()
         composeRule.onNodeWithContentDescription("Battery level 37 percent").assertIsDisplayed()
     }
 }

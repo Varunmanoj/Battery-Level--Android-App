@@ -72,6 +72,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.core.content.edit
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.varunmanojkumar.batterylevel.ui.theme.BatteryDimensions
 import com.varunmanojkumar.batterylevel.ui.theme.BatteryLevelTheme
@@ -124,6 +125,9 @@ class MainActivity : ComponentActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        if (packageManager.hasSystemFeature("android.hardware.type.watch")) {
+            installSplashScreen()
+        }
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         FirebaseAnalytics.getInstance(this)
@@ -133,7 +137,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             BatteryLevelTheme(themeMode = themeMode) {
-                BatteryLevelApp(
+                DeviceBatteryLevelApp(
                     uiState = batteryState,
                     themeMode = themeMode,
                     canSpeak = textToSpeechReady,
@@ -468,7 +472,7 @@ private fun SettingsPage(
 }
 
 @Composable
-private fun AppInfo(versionName: String) {
+internal fun AppInfo(versionName: String) {
     val versionDescription = stringResource(R.string.version_name_description, versionName)
     val footerColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
     Column(
@@ -499,7 +503,7 @@ private fun AppInfo(versionName: String) {
 }
 
 @Composable
-private fun SettingsAction(
+internal fun SettingsAction(
     label: Int,
     icon: Int,
     onClick: () -> Unit,
@@ -533,7 +537,7 @@ private fun SettingsAction(
 }
 
 @Composable
-private fun ThemeOption(
+internal fun ThemeOption(
     mode: ThemeMode,
     selectedMode: ThemeMode,
     label: Int,
@@ -648,7 +652,7 @@ private fun WideBatteryContent(
 }
 
 @Composable
-private fun BatteryReading(
+internal fun BatteryReading(
     uiState: BatteryUiState,
     compactTypography: Boolean = false,
 ) {
@@ -675,8 +679,8 @@ private fun BatteryReading(
             text = stringResource(R.string.battery_percentage, uiState.level),
             style = if (compactTypography) {
                 MaterialTheme.typography.displayLarge.copy(
-                    fontSize = 64.sp,
-                    lineHeight = 72.sp,
+                    fontSize = 56.sp,
+                    lineHeight = 62.sp,
                 )
             } else {
                 MaterialTheme.typography.displayLarge
@@ -687,7 +691,7 @@ private fun BatteryReading(
 }
 
 @Composable
-private fun SpeakButton(
+internal fun SpeakButton(
     canSpeak: Boolean,
     onSpeak: () -> Unit,
     compact: Boolean = false,
@@ -742,7 +746,7 @@ private fun SpeakButton(
 }
 
 @Composable
-private fun ChargingStatus(
+internal fun ChargingStatus(
     uiState: BatteryUiState,
     compact: Boolean = false,
 ) {

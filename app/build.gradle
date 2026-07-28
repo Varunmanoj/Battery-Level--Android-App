@@ -42,7 +42,8 @@ android {
         }
         wear {
             dimension "device"
-            versionCode 141
+            minSdk 25
+            versionCode 143
             versionName "8"
         }
     }
@@ -92,8 +93,11 @@ dependencies {
 
     implementation 'androidx.activity:activity-compose:1.13.0'
     implementation 'androidx.core:core-ktx:1.19.0'
+    implementation 'androidx.core:core-splashscreen:1.2.0'
     implementation 'androidx.compose.material3:material3'
     implementation 'androidx.compose.ui:ui-tooling-preview'
+    wearImplementation 'androidx.wear.compose:compose-foundation:1.6.2'
+    wearImplementation 'androidx.wear.compose:compose-material3:1.6.2'
     implementation 'com.google.android.material:material:1.14.0'
     implementation 'com.google.firebase:firebase-analytics'
     implementation 'com.google.firebase:firebase-crashlytics'

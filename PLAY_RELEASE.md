@@ -4,7 +4,7 @@ The project produces two independently targeted Android App Bundles from the
 same source code and package name:
 
 - Mobile: `app-mobile-release.aab`, version code 140, version name 8.
-- Wear OS: `app-wear-release.aab`, version code 141, version name 8.
+- Wear OS: `app-wear-release.aab`, version code 143, version name 8.
 
 The Wear OS variant declares `android.hardware.type.watch` as required and is
 standalone, so Google Play recognizes it as a watch-only artifact. Do not upload
